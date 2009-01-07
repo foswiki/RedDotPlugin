@@ -8,7 +8,7 @@
 
    Instead, you could check your fix in, raise a bug in the Bugs web, or mail the author(s).
 -->
----+!! <nop>%TOPIC%
+---+!! %TOPIC%
 
 This plugin renders a clickable red dot (<a style="color:red; font-weight:bold; padding-left:2px; padding-right:2px; line-height:100%; font-size:18px; text-decoration:none" href="%SCRIPTURL%/edit%SCRIPTSUFFIX%/%WEB%/%TOPIC%?t=%SERVERTIME{"$year$mo$day$min$sec"}%">.</a>) to ease the edit access to
 a page. The red dot will only be visible if the current wikiuser has
@@ -43,7 +43,6 @@ other topic that you specify. Note, however, that you need to enable cookies in 
 Furthermore, the RedDotPlugin respects the =WHITEBOARD= topic variable.
 If you add =Set WHITEBOARD = off=
 to a target topic text then the reddot link will disable the textarea (whiteboard) in edit mode.
-Note, however, that this feature only works on a TWiki/Dakar engine.
 
 ---++ Examples
 	* %TOPIC%%REDDOT%  will get a red dot only if you are in the 
@@ -52,11 +51,11 @@ Note, however, that this feature only works on a TWiki/Dakar engine.
 
 ---++ Plugin Installation Instructions
 
-	* [[http://twiki.org/p/pub/Plugins/%TOPIC%/%TOPIC%.zip][Download]] the ZIP file
+	* Download the ZIP file
 	* Unzip it in your twiki installation directory. Content: 
 	  | *File:* | *Description:* |
 %$MANIFEST%
-	* (Dakar) Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+	* (Dakar) Visit =configure= in your installation, and enable the plugin in the {Plugins} section.
 
 
 ---++ Plugin Info
@@ -65,11 +64,12 @@ Note, however, that this feature only works on a TWiki/Dakar engine.
 -->
 
 
-|  Plugin Author: | TWiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2005-2008, Michael Daum http://michaeldaumconsulting.com |
+|  Plugin Author: | Michael Daum |
+|  Copyright &copy;: | 2005-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Version: | v1.41 |
+|  Plugin Version: | v1.42 |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  07 Jan 2009: | certified for foswiki/compat |
 |  14 Jun 2008: | redirecting to the url current url including its current url params |
 |  03 Jan 2008: | using TWiki-4 APIs to register tags; fixed default values for reddots |
 |  18 Sep 2006: | don't use private apis; removed endRenderingHandler: this plugin does not \
@@ -90,14 +90,10 @@ Note, however, that this feature only works on a TWiki/Dakar engine.
 |  23 Sep 2005: | added =text=, =style=, =grant= and =WHITEBOARD= feature |
 |  19 Sep 2005: | added redirect-to-origin feature |
 |  22 Aug 2005: | Initial version |
-|  TWiki Dependency: | $TWiki::Plugins::VERSION 1.024 |
+|  Dependency: | $Foswiki::Plugins::VERSION 1.024 |
 |  CPAN Dependencies: | none |
-|  Other Dependencies: | Foswiki:Extensions/SessionPlugin (not needed on TWiki/Dakar) |
+|  Other Dependencies: | none |
 |  Perl Version: | 5.005 |
 |  Foswiki:Extensions/Benchmark: | %SYSTEMWEB%.GoodStyle nn%, %SYSTEMWEB%.FormattedSearch nn%, %TOPIC% nn% |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
 |  Feedback: | Foswiki:Extensions/%TOPIC%Dev |
-|  Appraisal: | Foswiki:Extensions/%TOPIC%Appraisal |
-
--- TWiki:Main.MichaelDaum - 14 Jun 2008
-
