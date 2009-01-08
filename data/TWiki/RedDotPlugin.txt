@@ -50,13 +50,7 @@ to a target topic text then the reddot link will disable the textarea (whiteboar
 	* %WIKIUSERNAME%%REDDOT{"%WIKIUSERNAME%"}% points to your homepage.
 
 ---++ Plugin Installation Instructions
-
-	* Download the ZIP file
-	* Unzip it in your twiki installation directory. Content: 
-	  | *File:* | *Description:* |
-%$MANIFEST%
-	* (Dakar) Visit =configure= in your installation, and enable the plugin in the {Plugins} section.
-
+%$INSTALL_INSTRUCTIONS%
 
 ---++ Plugin Info
 <!-- provided for compatibility only
@@ -67,20 +61,20 @@ to a target topic text then the reddot link will disable the textarea (whiteboar
 |  Plugin Author: | Michael Daum |
 |  Copyright &copy;: | 2005-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Version: | v1.42 |
+|  Plugin Version: | v1.43 |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
 |  07 Jan 2009: | certified for foswiki/compat |
 |  14 Jun 2008: | redirecting to the url current url including its current url params |
 |  03 Jan 2008: | using TWiki-4 APIs to register tags; fixed default values for reddots |
 |  18 Sep 2006: | don't use private apis; removed endRenderingHandler: this plugin does not \
-                  work on older twiki releases!; create cgi urls properly |
+                  work on older core engine releases!; create cgi urls properly |
 |  31 Aug 2006: | added NO_PREFS_IN_TOPIC |
 |  24 Aug 2006: | more effort to find out the current cgi action, even when using short urls |
 |  28 Jul 2006: | added <nop>PatternSkin css to really make reddots red |
 |  10 Mar 2006: | use ENV instead of the CGI object to detect the current cgi action |
 |  15 Feb 2006: | don't initialize the redirector in scripted mode |
 |  14 Feb 2006: | fixed redirects to anchors; \
-                  fixed permission check on old twiki releases;\
+                  fixed permission check on old core engine releases;\
 		  fixed use of uninitialised variables on perl 5.8.8 |
 |  26 Jan 2006: | w3c fixes |
 |  01 Dec 2005: | fixed deprecation warnings on dakar |

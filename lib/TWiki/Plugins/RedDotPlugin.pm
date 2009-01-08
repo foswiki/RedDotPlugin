@@ -27,14 +27,14 @@ use vars qw(
 
 
 $VERSION = '$Rev$';
-$RELEASE = '1.41';
+$RELEASE = '1.43';
 $NO_PREFS_IN_TOPIC = 1;
 $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 
 use constant DEBUG => 0; # toggle me
 
 $header = <<'HERE';
-<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="%PUBURLPATH%/%TWIKIWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
 HERE
 
 ###############################################################################
@@ -107,7 +107,7 @@ sub renderRedDot {
 	$wikiName, undef, $thisTopic, $thisWeb);
       if ($hasEditAccess) {
 	$hasEditAccess = 0 unless $wikiName =~ /$theGrant/; 
-	# SMELL: use the twiki users and groups functions to check
+	# SMELL: use the users and groups functions to check
 	# if we are in theGrant
       }
       if ($hasEditAccess) {
