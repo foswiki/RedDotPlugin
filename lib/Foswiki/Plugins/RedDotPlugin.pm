@@ -14,32 +14,32 @@
 # http://www.gnu.org/copyleft/gpl.html
 #
 ###############################################################################
-package TWiki::Plugins::RedDotPlugin;
+package Foswiki::Plugins::RedDotPlugin;
 use strict;
 
 ###############################################################################
 use vars qw(
         $baseWeb $baseTopic $user $VERSION $RELEASE
-        $header $doneHeader $currentAction
-	%TWikiCompatibility $counter
-	$NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
+        $header $doneHeader $currentAction $counter
+        $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
+        $iconTopic @iconSearchPath
     );
 
 
 $VERSION = '$Rev$';
-$RELEASE = '1.43';
+$RELEASE = '2.00';
 $NO_PREFS_IN_TOPIC = 1;
 $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 
 use constant DEBUG => 0; # toggle me
 
 $header = <<'HERE';
-<link rel="stylesheet" href="%PUBURLPATH%/%TWIKIWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
 HERE
 
 ###############################################################################
 sub writeDebug {
-  #TWiki::Func::writeDebug("- RedDotPlugin - " . $_[0]) if DEBUG;
+  #Foswiki::Func::writeDebug("- RedDotPlugin - " . $_[0]) if DEBUG;
   print STDERR "- RedDotPlugin - " . $_[0] . "\n" if DEBUG;
 }
 
@@ -48,12 +48,14 @@ sub initPlugin {
   ($baseTopic, $baseWeb, $user) = @_;
 
 
-  TWiki::Func::registerTagHandler('REDDOT', \&renderRedDot);
+  Foswiki::Func::registerTagHandler('REDDOT', \&renderRedDot);
     
   $doneHeader = 0;
   $counter = 0;
   $baseWeb =~ s/\//\./go;
   $currentAction = '';
+  $iconTopic = '';
+  @iconSearchPath = ();
 
   return 1;
 }
@@ -69,21 +71,32 @@ sub commonTagsHandler {
 sub renderRedDot {
   my ($session, $params, $theTopic, $theWeb) = @_;
 
-  writeDebug("called renderRedDot($theWeb, $theTopic), parms=".$params->stringify);
+  #writeDebug("called renderRedDot($theWeb, $theTopic), parms=".$params->stringify);
 
   my $theAction = getRequestAction();
   return '' unless $theAction =~ /^view/; 
 
   my $theWebTopics = $params->{_DEFAULT} || "$theWeb.$theTopic";
   my $theRedirect = $params->{redirect};
-  my $theText = $params->{text} || '.';
+  my $theText = $params->{text};
   my $theStyle = $params->{style} || '';
+  my $theClass = $params->{class} || '';
+  my $theIconName = $params->{icon} || '';
   my $theGrant = $params->{grant} || '.*';
 
-  my $query = TWiki::Func::getCgiQuery();
+  $theText = '<strong>.</strong>' unless defined $theText;
+
+  my $theIcon;
+  $theIcon = getIconUrlPath($theWeb, $theTopic, $theIconName) if $theIconName;
+  if ($theIcon) {
+    $theText = 
+      "<span class='redDotIcon' style='background-image:url($theIcon)'></span>";
+  }
+
+  my $query = Foswiki::Func::getCgiQuery();
   unless ($theRedirect) {
     my $queryString = $query->query_string;
-    $theRedirect = TWiki::Func::getScriptUrl($baseWeb, $baseTopic).
+    $theRedirect = Foswiki::Func::getScriptUrl($baseWeb, $baseTopic, 'view').
       '?'.$queryString.
       "#reddot$counter";
   }
@@ -92,18 +105,18 @@ sub renderRedDot {
   my $thisWeb;
   my $thisTopic;
   my $hasEditAccess = 0;
-  my $wikiName = TWiki::Func::getWikiName();
+  my $wikiName = Foswiki::Func::getWikiName();
 
   foreach my $webTopic (split(/\s*,\s*/, $theWebTopics)) {
     #writeDebug("testing webTopic=$webTopic");
 
     ($thisWeb, $thisTopic) = 
-      TWiki::Func::normalizeWebTopicName($baseWeb, $webTopic);
+      Foswiki::Func::normalizeWebTopicName($baseWeb, $webTopic);
     $thisWeb =~ s/\//\./go;
 
-    if (TWiki::Func::topicExists($thisWeb, $thisTopic)) {
+    if (Foswiki::Func::topicExists($thisWeb, $thisTopic)) {
       #writeDebug("checking access on $thisWeb.$thisTopic for $wikiName");
-      $hasEditAccess = TWiki::Func::checkAccessPermission("CHANGE", 
+      $hasEditAccess = Foswiki::Func::checkAccessPermission("CHANGE", 
 	$wikiName, undef, $thisTopic, $thisWeb);
       if ($hasEditAccess) {
 	$hasEditAccess = 0 unless $wikiName =~ /$theGrant/; 
@@ -126,22 +139,20 @@ sub renderRedDot {
   # red dotting
   my $whiteBoard = '';#_getValueFromTopic($thisWeb, $thisTopic, 'WHITEBOARD') || '';
   my $result = 
-    '<span class="redDot" ';
+    "<span class='redDot $theClass' ";
+  $result .= "style='$theStyle' " if $theStyle;
   $result .=
-    '><a name="reddot'.($counter++).'" '.
-    'href="'.
-    TWiki::Func::getScriptUrl($thisWeb,$thisTopic,'edit', 't'=>time());
+    '><a name=\'reddot'.($counter++).'\' '.
+    'href=\''.
+    Foswiki::Func::getScriptUrl($thisWeb,$thisTopic,'edit', 't'=>time());
   $result .= 
     "&redirectto=".urlEncode($theRedirect) if $theRedirect ne "$thisWeb.$thisTopic";
   $result .= 
     '&action=form' if $whiteBoard =~ /off/;
-  $result .= '" ';
-  $result .= "style=\"$theStyle\" " if $theStyle;
-  $result .=
-    "title=\"Edit&nbsp;<nop>$thisWeb.$thisTopic\" " .
-    ">$theText</a></span>";
+  $result .= '\' ';
+  $result .= "title='Edit&nbsp;<nop>$thisWeb.$thisTopic'>$theText</a></span>";
 
-  writeDebug("done renderRedDot");
+  #writeDebug("done renderRedDot");
 
   return $result;
 }
@@ -153,7 +164,7 @@ sub _getValueFromTopic {
 
   if (!$text) {
     my $meta;
-    ($meta, $text) = TWiki::Func::readTopic($theWeb, $theTopic);
+    ($meta, $text) = Foswiki::Func::readTopic($theWeb, $theTopic);
   }
 
   foreach my $line (split(/\n/, $text)) {
@@ -183,12 +194,12 @@ sub getRequestAction {
 
   return $currentAction if $currentAction;
 
-  my $request = TWiki::Func::getCgiQuery();
+  my $request = Foswiki::Func::getCgiQuery();
 
   if (defined($request->action)) {
     $currentAction = $request->action();
   } else {
-    my $context = TWiki::Func::getContext();
+    my $context = Foswiki::Func::getContext();
 
     # not all cgi actions we want to distinguish set their context
     # so only use those we are sure of
@@ -212,6 +223,34 @@ sub getRequestAction {
   }
 
   return $currentAction;
+}
+
+###############################################################################
+sub getIconUrlPath {
+  my ($web, $topic, $iconName) = @_;
+
+  return '' unless $iconName;
+
+  unless (@iconSearchPath) {
+    my $iconSearchPath = 
+      Foswiki::Func::getPreferencesValue('REDDOTPLUGIN_ICONSEARCHPATH')
+      Foswiki::Func::getPreferencesValue('JQUERYPLUGIN_ICONSEARCHPATH')
+      || 'FamFamFamSilkIcons, FamFamFamSilkCompanion1Icons, FamFamFamFlagIcons, FamFamFamMiniIcons, FamFamFamMintIcons';
+    @iconSearchPath = split(/\s*,\s*/, $iconSearchPath);
+  }
+
+  $iconName =~ s/^.*\.(.*?)$/$1/;
+  my $iconPath;
+  my $iconWeb = $Foswiki::cfg{SystemWebName};
+  my $pubSystemDir = $Foswiki::cfg{PubDir}.'/'.$Foswiki::cfg{SystemWebName};
+
+  foreach my $path (@iconSearchPath) {
+    if (-f $pubSystemDir.'/'.$path.'/'.$iconName.'.png') {
+      return Foswiki::Func::getPubUrlPath().'/'.$iconWeb.'/'.$path.'/'.$iconName.'.png';
+    }
+  }
+
+  return Foswiki::Func::getPubUrlPath().'/'.$iconWeb.'/'.$iconTopic.'/'.$iconName.'.png';
 }
 
 1;

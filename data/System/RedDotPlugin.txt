@@ -20,49 +20,65 @@ other topic that you specify. Note, however, that you need to enable cookies in 
 
 %TOC%
 
----++ Syntax Rules
+---++ REDDOT
+Syntax: =%<nop>REDDOT{"&lt;topic1>[,..., &lt;topicN>]" ... }%= 
 
-| *Tag* | *Description* | 
-| =%<nop>REDDOT{"&lt;topic1>[,..., &lt;topicN>]" ... }%= \
-| _reddot_ the first target topic that grants write access; <br/>\
-  Arguments: \
-  <ul> \
-  <li> =redirect="..."=: <br/>\
-  jump back to a given topic after the edit process was completed; \
-  defaults to the originating topic where the red dot was on </li> \
-  <li> =text="..."=: <br/>\
-  use this text to create the edit link; defaults to a dot ( =.= ) </li> \
-  <li> =style="..."=: \
-  css to be added to the reddot style </li> \
-  <li> =grant="..."=: <br/>\
-  regular expression to be checked in addition to the implicite check \
-  for write access to the target topic; reddot only if the =grant= matches </li>\
-  </ul> \
-|
+Renders a _reddot_ for the given topic. If there are multiple topics
+=topic1=, =topic2=, ...., =topicN=, then the first target topic that
+grants write access will be chosen.
 
-Furthermore, the RedDotPlugin respects the =WHITEBOARD= topic variable.
+Arguments: 
+   * =redirect="&lt;jump-back-topic>"=: 
+     specifies the topic to jump back to after the edit process was completed;
+     defaults to the originating topic where the red dot was on 
+   * =text="..."=:
+     display text for the edit link; defaults to a dot ( =.= ) 
+   * =style="..."=: 
+     css to be added to the reddot style
+   * =class="..."=: 
+     css class to be asigned to this reddot
+   * =grant="..."=: 
+     regular expression to be checked in addition to the implicite access check 
+     for write access; reddot only if the =grant= pattern matches 
+   * =icon="..."=:
+     name of an icon to be used instead of the display text; icons are searched 
+     along the _iconsearchpath_
+
+---++ ICONSEARCHPATH
+The _iconsearchpath_ is specified in the REDDOTPLUGIN_ICONSEARCHPATH preference variable. 
+This is a list of topics that are searched
+for an icon name, e.g. as given in the =icon= argument to the %REDDOT tag. If you also installed
+Foswiki:Extensions/JQueryPlugin, then the icon search path given in JQUERYPLUGIN_ICONSEARCHPATH can
+be reused instead.  If none are
+defined the icon search path defaults to 
+=FamFamFamSilkIcons, FamFamFamSilkCompanion1Icons, FamFamFamFlagIcons, FamFamFamMiniIcons, FamFamFamMintIcons=.
+
+---++ WHITEBOARD
+The RedDotPlugin respects the =WHITEBOARD= topic variable.
 If you add =Set WHITEBOARD = off=
-to a target topic text then the reddot link will disable the textarea (whiteboard) in edit mode.
+to a target topic text then the reddot link will disable the textarea (whiteboard) in edit mode and jump
+right into the formfield editor.
 
 ---++ Examples
-	* %TOPIC%%REDDOT%  will get a red dot only if you are in the 
-	  %MAINWEB%.AdminGroup.
-	* %WIKIUSERNAME%%REDDOT{"%WIKIUSERNAME%"}% points to your homepage.
+   * %TOPIC%%REDDOT%  will get a red dot only if you are in the 
+     %USERSWEB%.AdminGroup.
+   * %WIKIUSERNAME%%REDDOT{"%WIKIUSERNAME%"}% points to your homepage.
 
 ---++ Plugin Installation Instructions
 %$INSTALL_INSTRUCTIONS%
 
 ---++ Plugin Info
 <!-- provided for compatibility only
-	* Set SHORTDESCRIPTION = Renders edit-links as little red dots
+   * Set SHORTDESCRIPTION = Renders edit-links as little red dots
 -->
 
 
 |  Plugin Author: | Michael Daum |
 |  Copyright &copy;: | 2005-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Version: | v1.43 |
+|  Plugin Version: | v2.00 |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  24 Apr 2009: | added icon and class argument, converted to foswiki plugin |
 |  07 Jan 2009: | certified for foswiki/compat |
 |  14 Jun 2008: | redirecting to the url current url including its current url params |
 |  03 Jan 2008: | using TWiki-4 APIs to register tags; fixed default values for reddots |
@@ -75,7 +91,7 @@ to a target topic text then the reddot link will disable the textarea (whiteboar
 |  15 Feb 2006: | don't initialize the redirector in scripted mode |
 |  14 Feb 2006: | fixed redirects to anchors; \
                   fixed permission check on old core engine releases;\
-		  fixed use of uninitialised variables on perl 5.8.8 |
+                  fixed use of uninitialised variables on perl 5.8.8 |
 |  26 Jan 2006: | w3c fixes |
 |  01 Dec 2005: | fixed deprecation warnings on dakar |
 |  09 Nov 2005: | fix use of uninitialized variable |
@@ -89,4 +105,4 @@ to a target topic text then the reddot link will disable the textarea (whiteboar
 |  Other Dependencies: | none |
 |  Perl Version: | 5.005 |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
-|  Feedback: | Foswiki:Extensions/%TOPIC%Dev |
+|  Support: | Foswiki:Support/%TOPIC% |

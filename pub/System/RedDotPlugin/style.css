@@ -1,10 +1,15 @@
 /* style sheet for reddots */
 
+.redDotIcon {
+  height:16px;
+  width:16px;
+  float:left;
+  background-repeat:no-repeat;
+  margin:2px;
+}
 .redDot a {
   color:red;
-  font-weight:bold;
-  padding-left:2px;
-  padding-right:2px;
+  font-weight:normal;
   text-decoration:none;
 }
 .redDot a:hover {
