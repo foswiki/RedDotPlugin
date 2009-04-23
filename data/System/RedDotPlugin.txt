@@ -76,7 +76,7 @@ right into the formfield editor.
 |  Plugin Author: | Michael Daum |
 |  Copyright &copy;: | 2005-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Version: | v2.00 |
+|  Plugin Version: | v2.01 |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
 |  24 Apr 2009: | added icon and class argument, converted to foswiki plugin |
 |  07 Jan 2009: | certified for foswiki/compat |

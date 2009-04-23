@@ -27,7 +27,7 @@ use vars qw(
 
 
 $VERSION = '$Rev$';
-$RELEASE = '2.00';
+$RELEASE = '2.01';
 $NO_PREFS_IN_TOPIC = 1;
 $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 
@@ -234,7 +234,7 @@ sub getIconUrlPath {
   unless (@iconSearchPath) {
     my $iconSearchPath = 
       Foswiki::Func::getPreferencesValue('REDDOTPLUGIN_ICONSEARCHPATH')
-      Foswiki::Func::getPreferencesValue('JQUERYPLUGIN_ICONSEARCHPATH')
+      || Foswiki::Func::getPreferencesValue('JQUERYPLUGIN_ICONSEARCHPATH')
       || 'FamFamFamSilkIcons, FamFamFamSilkCompanion1Icons, FamFamFamFlagIcons, FamFamFamMiniIcons, FamFamFamMintIcons';
     @iconSearchPath = split(/\s*,\s*/, $iconSearchPath);
   }
