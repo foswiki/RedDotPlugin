@@ -144,7 +144,7 @@ sub renderRedDot {
   $result .=
     '><a name=\'reddot'.($counter++).'\' '.
     'href=\''.
-    Foswiki::Func::getScriptUrl($thisWeb,$thisTopic,'edit', 't'=>time());
+    Foswiki::Func::getScriptUrl($thisWeb,$thisTopic, 'edit', 't'=>time());
   $result .= 
     "&redirectto=".urlEncode($theRedirect) if $theRedirect ne "$thisWeb.$thisTopic";
   $result .= 
