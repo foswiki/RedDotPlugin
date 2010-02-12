@@ -10,7 +10,7 @@
 -->
 ---+!! %TOPIC%
 
-This plugin renders a clickable red dot (<a style="color:red; font-weight:bold; padding-left:2px; padding-right:2px; line-height:100%; font-size:18px; text-decoration:none" href="%SCRIPTURL%/edit%SCRIPTSUFFIX%/%WEB%/%TOPIC%?t=%SERVERTIME{"$year$mo$day$min$sec"}%">.</a>) to ease the edit access to
+This plugin renders a clickable red dot (<a style="color:red; font-weight:bold; padding-left:2px; padding-right:2px; line-height:100%; font-size:18px; text-decoration:none" href="%SCRIPTURLPATH{"edit"}%/%WEB%/%TOPIC%?t=%SERVERTIME{"$year$mo$day$min$sec"}%">.</a>) to ease the edit access to
 a page. The red dot will only be visible if the current wikiuser has
 write access to the page the dot points to. You might also specify
 a list of topics (see syntax), where the first topic that grants
@@ -74,11 +74,12 @@ right into the formfield editor.
 
 
 |  Plugin Author: | Michael Daum |
-|  Copyright &copy;: | 2005-2009, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2005-2010, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  12 Feb 2010: | shipping minified and compressed files now | 
 |  24 Apr 2009: | added icon and class argument, converted to foswiki plugin |
 |  07 Jan 2009: | certified for foswiki/compat |
 |  14 Jun 2008: | redirecting to the url current url including its current url params |
@@ -101,9 +102,5 @@ right into the formfield editor.
 |  23 Sep 2005: | added =text=, =style=, =grant= and =WHITEBOARD= feature |
 |  19 Sep 2005: | added redirect-to-origin feature |
 |  22 Aug 2005: | Initial version |
-|  Dependency: | $Foswiki::Plugins::VERSION 1.024 |
-|  CPAN Dependencies: | none |
-|  Other Dependencies: | none |
-|  Perl Version: | 5.005 |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
 |  Support: | Foswiki:Support/%TOPIC% |

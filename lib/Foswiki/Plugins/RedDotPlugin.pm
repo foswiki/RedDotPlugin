@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2009 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2010 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,22 +20,18 @@ use strict;
 ###############################################################################
 use vars qw(
         $baseWeb $baseTopic $user $VERSION $RELEASE
-        $header $doneHeader $currentAction $counter
+        $doneHeader $currentAction $counter
         $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
         $iconTopic @iconSearchPath
     );
 
 
 $VERSION = '$Rev$';
-$RELEASE = '2.01';
+$RELEASE = '2.02';
 $NO_PREFS_IN_TOPIC = 1;
 $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 
 use constant DEBUG => 0; # toggle me
-
-$header = <<'HERE';
-<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
-HERE
 
 ###############################################################################
 sub writeDebug {
@@ -61,10 +57,14 @@ sub initPlugin {
 }
 
 ###############################################################################
-sub commonTagsHandler {
+sub addCSS {
 
   return if $doneHeader;
-  $doneHeader = 1 if $_[0] =~ s/<head>(.*?[\r\n]+)/<head>$1$header/o;
+  $doneHeader = 1;
+  Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
+<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
+HERE
+
 }
 
 ###############################################################################
@@ -83,6 +83,7 @@ sub renderRedDot {
   my $theClass = $params->{class} || '';
   my $theIconName = $params->{icon} || '';
   my $theGrant = $params->{grant} || '.*';
+  my $theTitle = $params->{title};
 
   $theText = '<strong>.</strong>' unless defined $theText;
 
@@ -150,9 +151,16 @@ sub renderRedDot {
   $result .= 
     '&action=form' if $whiteBoard =~ /off/;
   $result .= '\' ';
-  $result .= "title='Edit&nbsp;<nop>$thisWeb.$thisTopic'>$theText</a></span>";
+  if ($theTitle) {
+    $result .= "title='%ENCODE{\"$theTitle\" type=\"entity\"}%'";
+  } else {
+    $result .= "title='Edit&nbsp;<nop>$thisWeb.$thisTopic'";
+  }
+  $result .= ">$theText</a></span>";
 
   #writeDebug("done renderRedDot");
+
+  addCSS();
 
   return $result;
 }
