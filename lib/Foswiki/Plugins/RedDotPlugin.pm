@@ -62,7 +62,7 @@ sub addCSS {
   return if $doneHeader;
   $doneHeader = 1;
   Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
-<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/styles.css" type="text/css" media="all" />
 HERE
 
 }
