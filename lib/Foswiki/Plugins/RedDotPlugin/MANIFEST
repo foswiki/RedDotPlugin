@@ -1,6 +1,9 @@
 data/System/RedDotPlugin.txt 0644
 lib/Foswiki/Plugins/RedDotPlugin.pm 0644
 pub/System/RedDotPlugin/Makefile 0644
-pub/System/RedDotPlugin/styles.css 0644
-pub/System/RedDotPlugin/styles.css.gz 0644
-pub/System/RedDotPlugin/styles.uncompressed.css 0644
+pub/System/RedDotPlugin/reddot.css 0644
+pub/System/RedDotPlugin/reddot.css.gz 0644
+pub/System/RedDotPlugin/reddot.js 0644
+pub/System/RedDotPlugin/reddot.js.gz 0644
+pub/System/RedDotPlugin/reddot.uncompressed.css 0644
+pub/System/RedDotPlugin/reddot.uncompressed.js 0644
