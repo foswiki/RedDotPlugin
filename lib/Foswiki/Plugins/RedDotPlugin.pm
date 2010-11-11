@@ -18,18 +18,17 @@ package Foswiki::Plugins::RedDotPlugin;
 use strict;
 
 ###############################################################################
-use vars qw(
-        $baseWeb $baseTopic $user $VERSION $RELEASE
-        $doneHeader $currentAction $counter
-        $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
-        $iconTopic @iconSearchPath
-    );
 
 
-$VERSION = '$Rev$';
-$RELEASE = '2.02';
-$NO_PREFS_IN_TOPIC = 1;
-$SHORTDESCRIPTION = 'Renders edit-links as little red dots';
+our $VERSION = '$Rev$';
+our $RELEASE = '3.00';
+our $NO_PREFS_IN_TOPIC = 1;
+our $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
+our $baseTopic;
+our $baseWeb;
+our $counter;
+our $currentAction;
+our $user;
 
 use constant DEBUG => 0; # toggle me
 
@@ -43,28 +42,13 @@ sub writeDebug {
 sub initPlugin {
   ($baseTopic, $baseWeb, $user) = @_;
 
-
   Foswiki::Func::registerTagHandler('REDDOT', \&renderRedDot);
     
-  $doneHeader = 0;
   $counter = 0;
   $baseWeb =~ s/\//\./go;
   $currentAction = '';
-  $iconTopic = '';
-  @iconSearchPath = ();
 
   return 1;
-}
-
-###############################################################################
-sub addCSS {
-
-  return if $doneHeader;
-  $doneHeader = 1;
-  Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
-<link rel="stylesheet" href="%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/styles.css" type="text/css" media="all" />
-HERE
-
 }
 
 ###############################################################################
@@ -81,25 +65,45 @@ sub renderRedDot {
   my $theText = $params->{text};
   my $theStyle = $params->{style} || '';
   my $theClass = $params->{class} || '';
-  my $theIconName = $params->{icon} || '';
+  my $theIcon = $params->{icon} || 'pencil';
   my $theGrant = $params->{grant} || '.*';
   my $theTitle = $params->{title};
+  my $theAnimate = $params->{animate} || 'on';
 
-  $theText = '<strong>.</strong>' unless defined $theText;
-
-  my $theIcon;
-  $theIcon = getIconUrlPath($theWeb, $theTopic, $theIconName) if $theIconName;
-  if ($theIcon) {
-    $theText = 
-      "<span class='redDotIcon' style='background-image:url($theIcon)'></span>";
+  my $mode = 'redDotIconMode';
+  if ($theText) {
+    if (defined $theText) {
+      $mode = 'redDotTextMode';
+    } else {
+      $mode = 'redDotDefaultMode';
+      $theText = '.';
+    }
+    $theText = "<span>$theText</span>";
+  } else {
+    $theText = "%JQICON{$theIcon}%";
+  }
+  if ($theAnimate eq 'on') {
+    $mode .= ' redDotAnimated';
   }
 
   my $query = Foswiki::Func::getCgiQuery();
   unless ($theRedirect) {
-    my $queryString = $query->query_string;
-    $theRedirect = Foswiki::Func::getScriptUrl($baseWeb, $baseTopic, 'view').
-      '?'.$queryString.
-      "#reddot$counter";
+    my $redirectPref = Foswiki::Func::getPreferencesValue("REDDOT_REDIRECT");
+    if ($redirectPref) {
+      $redirectPref = Foswiki::Func::expandCommonVariables($redirectPref);
+      my ($redirectWeb, $redirectTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $redirectPref);
+      $theRedirect = Foswiki::Func::getScriptUrl($redirectWeb, $redirectTopic, 'view');
+    } else {
+      my $queryString = $query->query_string;
+
+      # SMELL: double quotes, even encoded truncate the redirectto. 
+      # so we double encode them
+      $queryString =~ s/\%22/\%2522/g;
+
+      $theRedirect = Foswiki::Func::getScriptUrl($baseWeb, $baseTopic, 'view').
+        '?'.$queryString;
+    }
+    $theRedirect .= "#reddot$counter";
   }
 
   # find the first webtopic that we have access to
@@ -138,9 +142,8 @@ sub renderRedDot {
   #writeDebug("rendering red dot on $thisWeb.$thisTopic for $wikiName");
 
   # red dotting
-  my $whiteBoard = '';#_getValueFromTopic($thisWeb, $thisTopic, 'WHITEBOARD') || '';
   my $result = 
-    "<span class='redDot $theClass' ";
+    "<span class='redDot $mode $theClass' ";
   $result .= "style='$theStyle' " if $theStyle;
   $result .=
     '><a name=\'reddot'.($counter++).'\' '.
@@ -148,8 +151,6 @@ sub renderRedDot {
     Foswiki::Func::getScriptUrl($thisWeb,$thisTopic, 'edit', 't'=>time());
   $result .= 
     "&redirectto=".urlEncode($theRedirect) if $theRedirect ne "$thisWeb.$thisTopic";
-  $result .= 
-    '&action=form' if $whiteBoard =~ /off/;
   $result .= '\' ';
   if ($theTitle) {
     $result .= "title='%ENCODE{\"$theTitle\" type=\"entity\"}%'";
@@ -160,29 +161,18 @@ sub renderRedDot {
 
   #writeDebug("done renderRedDot");
 
-  addCSS();
+  # add stuff to head
+  Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
+<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.css' media='all' />
+HERE
+
+  if ($theAnimate eq 'on') {
+    Foswiki::Func::addToZone('script', 'REDDOTPLUGIN::JS', <<'HERE', "JQUERYPLUGIN::FOSWIKI");
+<script src='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.js'></script>
+HERE
+  }
 
   return $result;
-}
-
-###############################################################################
-# _getValue: my version to get the value of a variable in a topic
-sub _getValueFromTopic {
-  my ($theWeb, $theTopic, $theKey, $text) = @_;
-
-  if (!$text) {
-    my $meta;
-    ($meta, $text) = Foswiki::Func::readTopic($theWeb, $theTopic);
-  }
-
-  foreach my $line (split(/\n/, $text)) {
-    if ($line =~ /^(?:\t|\s\s\s)+\*\sSet\s$theKey\s\=\s*(.*)/) {
-      my $value = defined $1 ? $1 : "";
-      return $value;
-    }
-  }
-
-  return '';
 }
 
 ###############################################################################
@@ -231,34 +221,6 @@ sub getRequestAction {
   }
 
   return $currentAction;
-}
-
-###############################################################################
-sub getIconUrlPath {
-  my ($web, $topic, $iconName) = @_;
-
-  return '' unless $iconName;
-
-  unless (@iconSearchPath) {
-    my $iconSearchPath = 
-      Foswiki::Func::getPreferencesValue('REDDOTPLUGIN_ICONSEARCHPATH')
-      || Foswiki::Func::getPreferencesValue('JQUERYPLUGIN_ICONSEARCHPATH')
-      || 'FamFamFamSilkIcons, FamFamFamSilkCompanion1Icons, FamFamFamFlagIcons, FamFamFamMiniIcons, FamFamFamMintIcons';
-    @iconSearchPath = split(/\s*,\s*/, $iconSearchPath);
-  }
-
-  $iconName =~ s/^.*\.(.*?)$/$1/;
-  my $iconPath;
-  my $iconWeb = $Foswiki::cfg{SystemWebName};
-  my $pubSystemDir = $Foswiki::cfg{PubDir}.'/'.$Foswiki::cfg{SystemWebName};
-
-  foreach my $path (@iconSearchPath) {
-    if (-f $pubSystemDir.'/'.$path.'/'.$iconName.'.png') {
-      return Foswiki::Func::getPubUrlPath().'/'.$iconWeb.'/'.$path.'/'.$iconName.'.png';
-    }
-  }
-
-  return Foswiki::Func::getPubUrlPath().'/'.$iconWeb.'/'.$iconTopic.'/'.$iconName.'.png';
 }
 
 1;

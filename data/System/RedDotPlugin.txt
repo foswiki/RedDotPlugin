@@ -41,23 +41,7 @@ Arguments:
      regular expression to be checked in addition to the implicite access check 
      for write access; reddot only if the =grant= pattern matches 
    * =icon="..."=:
-     name of an icon to be used instead of the display text; icons are searched 
-     along the _iconsearchpath_
-
----++ ICONSEARCHPATH
-The _iconsearchpath_ is specified in the REDDOTPLUGIN_ICONSEARCHPATH preference variable. 
-This is a list of topics that are searched
-for an icon name, e.g. as given in the =icon= argument to the %REDDOT tag. If you also installed
-Foswiki:Extensions/JQueryPlugin, then the icon search path given in JQUERYPLUGIN_ICONSEARCHPATH can
-be reused instead.  If none are
-defined the icon search path defaults to 
-=FamFamFamSilkIcons, FamFamFamSilkCompanion1Icons, FamFamFamFlagIcons, FamFamFamMiniIcons, FamFamFamMintIcons=.
-
----++ WHITEBOARD
-The RedDotPlugin respects the =WHITEBOARD= topic variable.
-If you add =Set WHITEBOARD = off=
-to a target topic text then the reddot link will disable the textarea (whiteboard) in edit mode and jump
-right into the formfield editor.
+     name of an icon to be used instead of the display text (see [[VarJQICON][JQICON]])
 
 ---++ Examples
    * %TOPIC%%REDDOT%  will get a red dot only if you are in the 
@@ -79,6 +63,11 @@ right into the formfield editor.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  11 Nov 2010: | use JQICON instead of own getIconUrl() procedure; \
+                  adding js to animate the pencil; \
+                  fixing double quotes in redirectto truncating the list of url params; \
+                  overhault css not to disturb the rest of the page's flow; \
+                  removing WHITEBOARD feature as it badly interferes with other ways to manipulate the editor |
 |  12 Feb 2010: | shipping minified and compressed files now | 
 |  24 Apr 2009: | added icon and class argument, converted to foswiki plugin |
 |  07 Jan 2009: | certified for foswiki/compat |

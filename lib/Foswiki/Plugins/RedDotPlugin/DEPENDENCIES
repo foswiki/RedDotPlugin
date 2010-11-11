@@ -1,2 +1,1 @@
-Foswiki::Plugins::ZonePlugin,>=1.0,perl,Required
-
+Foswiki::Plugins::JQueryPlugin,>=3.7,perl,Required
