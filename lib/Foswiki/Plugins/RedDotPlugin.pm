@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2010 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2012 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,13 +15,15 @@
 #
 ###############################################################################
 package Foswiki::Plugins::RedDotPlugin;
+
 use strict;
+use warnings;
 
 ###############################################################################
 
 
-our $VERSION = '$Rev$';
-our $RELEASE = '3.00';
+our $VERSION = '3.11';
+our $RELEASE = '3.11';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 our $baseTopic;
@@ -43,6 +45,7 @@ sub initPlugin {
   ($baseTopic, $baseWeb, $user) = @_;
 
   Foswiki::Func::registerTagHandler('REDDOT', \&renderRedDot);
+  Foswiki::Func::registerTagHandler('REDDOTINIT', \&renderRedDotInit);
     
   $counter = 0;
   $baseWeb =~ s/\//\./go;
@@ -52,13 +55,38 @@ sub initPlugin {
 }
 
 ###############################################################################
+sub renderRedDotInit {
+  my ($session, $params, $theTopic, $theWeb) = @_;
+
+  my $theAnimate = Foswiki::Func::isTrue($params->{animate}, 1);
+
+  addStuffToHead($theAnimate);
+  return "";
+}
+
+###############################################################################
+sub addStuffToHead {
+  my $animated = shift;
+
+  Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
+<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.css' media='all' />
+HERE
+
+  if ($animated) {
+    Foswiki::Func::addToZone('script', 'REDDOTPLUGIN::JS', <<'HERE', "JQUERYPLUGIN::FOSWIKI");
+<script src='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.js'></script>
+HERE
+  }
+}
+
+###############################################################################
 sub renderRedDot {
   my ($session, $params, $theTopic, $theWeb) = @_;
 
   #writeDebug("called renderRedDot($theWeb, $theTopic), parms=".$params->stringify);
 
-  my $theAction = getRequestAction();
-  return '' unless $theAction =~ /^view/; 
+  my $requestAction = getRequestAction();
+  return '' unless $requestAction =~ /^view/; 
 
   my $theWebTopics = $params->{_DEFAULT} || "$theWeb.$theTopic";
   my $theRedirect = $params->{redirect};
@@ -68,7 +96,10 @@ sub renderRedDot {
   my $theIcon = $params->{icon} || 'pencil';
   my $theGrant = $params->{grant} || '.*';
   my $theTitle = $params->{title};
-  my $theAnimate = $params->{animate} || 'on';
+  my $theAnimate = Foswiki::Func::isTrue($params->{animate}, 1);
+  my $theAction = $params->{action};
+  my $theTemplate = $params->{template};
+  my $theParent = $params->{parent};
 
   my $mode = 'redDotIconMode';
   if ($theText) {
@@ -78,11 +109,11 @@ sub renderRedDot {
       $mode = 'redDotDefaultMode';
       $theText = '.';
     }
-    $theText = "<span>$theText</span>";
+    $theText = "$theText";
   } else {
     $theText = "%JQICON{$theIcon}%";
   }
-  if ($theAnimate eq 'on') {
+  if ($theAnimate) {
     $mode .= ' redDotAnimated';
   }
 
@@ -141,16 +172,22 @@ sub renderRedDot {
 
   #writeDebug("rendering red dot on $thisWeb.$thisTopic for $wikiName");
 
+  my %params = ();
+  $params{t} = time();
+  $params{action} = $theAction if defined $theAction;
+  $params{template} = $theTemplate if defined $theTemplate;
+  $params{redirectto} = $theRedirect if $theRedirect ne "$thisWeb.$thisTopic";
+
   # red dotting
   my $result = 
     "<span class='redDot $mode $theClass' ";
+  $result .= "data-parent='$theParent' " if defined $theParent;
   $result .= "style='$theStyle' " if $theStyle;
   $result .=
-    '><a name=\'reddot'.($counter++).'\' '.
+    '><a id=\'reddot'.($counter++).'\' '.
     'href=\''.
-    Foswiki::Func::getScriptUrl($thisWeb,$thisTopic, 'edit', 't'=>time());
-  $result .= 
-    "&redirectto=".urlEncode($theRedirect) if $theRedirect ne "$thisWeb.$thisTopic";
+    Foswiki::Func::getScriptUrl($thisWeb,$thisTopic, 'edit', %params);
+
   $result .= '\' ';
   if ($theTitle) {
     $result .= "title='%ENCODE{\"$theTitle\" type=\"entity\"}%'";
@@ -161,16 +198,7 @@ sub renderRedDot {
 
   #writeDebug("done renderRedDot");
 
-  # add stuff to head
-  Foswiki::Func::addToZone('head', 'REDDOTPLUGIN::CSS', <<'HERE');
-<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.css' media='all' />
-HERE
-
-  if ($theAnimate eq 'on') {
-    Foswiki::Func::addToZone('script', 'REDDOTPLUGIN::JS', <<'HERE', "JQUERYPLUGIN::FOSWIKI");
-<script src='%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin/reddot.js'></script>
-HERE
-  }
+  addStuffToHead($theAnimate);
 
   return $result;
 }

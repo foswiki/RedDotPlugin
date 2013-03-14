@@ -12,8 +12,18 @@
  */
 jQuery(function($) {
   $('.redDotAnimated:not(.redDotInited)').livequery(function() {
-    var $this = $(this);
-    $this.addClass('redDotInited').parent().hoverIntent({
+    var $this = $(this), 
+        opts = $this.data(),
+        parentElem;
+
+    if (typeof(opts.parent) === 'undefined') {
+      parentElem = $this.parent();
+    } else {
+      parentElem = $this.parents(opts.parent).first();
+    }
+
+    $this.addClass('redDotInited');
+    parentElem.hoverIntent({
       over: function() {
         $this.fadeIn(500, function() {
           $this.css({opacity: 1.0});
