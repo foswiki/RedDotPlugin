@@ -1,0 +1,11 @@
+*.gz
+*.swp
+pub/System/RedDotPlugin/reddot.js
+pub/System/RedDotPlugin/reddot.css
+RedDotPlugin.md5
+RedDotPlugin.sha1
+RedDotPlugin.tgz
+RedDotPlugin.txt
+RedDotPlugin.zip
+RedDotPlugin_installer
+RedDotPlugin_installer.pl

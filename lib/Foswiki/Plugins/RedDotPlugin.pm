@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2012 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2014 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ use warnings;
 ###############################################################################
 
 
-our $VERSION = '3.11';
-our $RELEASE = '3.11';
+our $VERSION = '3.12';
+our $RELEASE = '3.12';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Renders edit-links as little red dots';
 our $baseTopic;
@@ -32,12 +32,12 @@ our $counter;
 our $currentAction;
 our $user;
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 ###############################################################################
 sub writeDebug {
-  #Foswiki::Func::writeDebug("- RedDotPlugin - " . $_[0]) if DEBUG;
-  print STDERR "- RedDotPlugin - " . $_[0] . "\n" if DEBUG;
+  #Foswiki::Func::writeDebug("- RedDotPlugin - " . $_[0]) if TRACE;
+  print STDERR "- RedDotPlugin - " . $_[0] . "\n" if TRACE;
 }
 
 ###############################################################################
@@ -111,7 +111,7 @@ sub renderRedDot {
     }
     $theText = "$theText";
   } else {
-    $theText = "%JQICON{$theIcon}%";
+    $theText = '%JQICON{"'.$theIcon.'" format="<img src=\'$iconPath\' width=\'16\' height=\'16\' class=\'$iconClass\' $iconAlt/>"}%';
   }
   if ($theAnimate) {
     $mode .= ' redDotAnimated';

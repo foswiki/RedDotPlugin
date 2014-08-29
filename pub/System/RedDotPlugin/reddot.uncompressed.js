@@ -1,7 +1,7 @@
 /*
  * reddot helper
  *
- * Copyright (c) 2010-2011 Michael Daum http://michaeldaumconsulting.com
+ * Copyright (c) 2010-2014 Michael Daum http://michaeldaumconsulting.com
  *
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
