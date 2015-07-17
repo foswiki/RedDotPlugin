@@ -1,38 +1,67 @@
 /*
- * reddot helper
+ * jQuery.RedDot plugin
  *
- * Copyright (c) 2010-2014 Michael Daum http://michaeldaumconsulting.com
+ * Copyright (c) 2010-2015 Michael Daum http://michaeldaumconsulting.com
  *
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * Revision: $Id$
- *
  */
 jQuery(function($) {
-  $('.redDotAnimated:not(.redDotInited)').livequery(function() {
-    var $this = $(this), 
-        opts = $this.data(),
-        parentElem;
+"use strict";
 
-    if (typeof(opts.parent) === 'undefined') {
-      parentElem = $this.parent();
+  /***************************************************************************
+   * class definition
+   */
+  function RedDot(elem, opts) {
+    var self = this;
+
+    self.elem = $(elem);
+    self.opts = $.extend({}, opts, self.elem.data());
+    self.init();
+  }
+
+  /***************************************************************************
+   * init redDot instance
+   */
+  RedDot.prototype.init = function() {
+    var self = this;
+
+    if (typeof(self.opts.parent) === 'undefined') {
+      self.parentElem = self.elem.parent();
     } else {
-      parentElem = $this.parents(opts.parent).first();
+      self.parentElem = self.elem.parents(self.opts.parent).first();
     }
 
-    $this.addClass('redDotInited');
-    parentElem.hoverIntent({
+    self.parentElem.hoverIntent({
       over: function() {
-        $this.fadeIn(500, function() {
-          $this.css({opacity: 1.0});
+        self.elem.fadeIn(500, function() {
+          self.elem.css({opacity: 1.0});
         });
       },
       out: function() {
-        $this.stop();
-        $this.css({display:'none', opacity: 1.0});  
+        self.elem.stop();
+        self.elem.css({display:'none', opacity: 1.0});  
       }
     });
+  };
+
+  /***************************************************************************
+   * make it a jQuery plugin
+   */
+  $.fn.redDot = function(opts) {
+    return this.each(function() {
+      if (!$.data(this, "redDot")) {
+        $.data(this, "redDot", new RedDot(this, opts));
+      }
+    });
+  };
+
+  /***************************************************************************
+   * enable declarative widget instanziation
+   */
+  $(".redDotAnimated:not(.redDotInited)").livequery(function() {
+    $(this).addClass("redDotInited").redDot();
   });
 });

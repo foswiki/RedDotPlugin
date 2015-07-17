@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1407719200" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1437155427" format="1.1" version="1"}%
 ---+!! %TOPIC%
 
 This plugin renders a clickable red dot (<a style="color:red; font-weight:bold; padding-left:2px; padding-right:2px; line-height:100%; font-size:18px; text-decoration:none" href="%SCRIPTURLPATH{"edit"}%/%WEB%/%TOPIC%?t=%SERVERTIME{"$year$mo$day$min$sec"}%">.</a>) to ease the edit access to
@@ -49,11 +49,12 @@ Arguments:
 
 
 |  Plugin Author: | Michael Daum |
-|  Copyright &copy;: | 2005-2014, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2005-2015, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  05 Mar 2015: | rewrite as a jQuery plugin |
 |  13 Mar 2013: | modernizing some parts |
 |  11 Nov 2010: | use JQICON instead of own getIconUrl() procedure; \
                   adding js to animate the pencil; \

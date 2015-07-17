@@ -1,4 +1,6 @@
 data/System/RedDotPlugin.txt 0644
+lib/Foswiki/Plugins/RedDotPlugin/Core.pm 0644
+lib/Foswiki/Plugins/RedDotPlugin/DEPENDENCIES 0644
 lib/Foswiki/Plugins/RedDotPlugin.pm 0644
 pub/System/RedDotPlugin/Makefile 0644
 pub/System/RedDotPlugin/reddot.css 0644
