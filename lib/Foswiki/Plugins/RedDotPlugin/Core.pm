@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2015 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2016 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,10 +37,8 @@ sub writeDebug {
 ###############################################################################
 sub new {
   my $class = shift;
-  my $session = shift || $Foswiki::Plugins::SESSION;
 
   my $this = bless($class->SUPER::new( 
-    $session,
     name => 'RedDot',
     version => '4.00',
     author => 'Michael Daum',
@@ -49,7 +47,7 @@ sub new {
     documentation => '%SYSTEMWEB%.RedDotPlugin',
     javascript => ['reddot.js'],
     css => ['reddot.css'],
-    dependencies => ['livequery', 'JQUERYPLUGIN::FOSWIKI'], 
+    dependencies => ['livequery', 'hoverintent', 'JQUERYPLUGIN::FOSWIKI'], 
     currentAction => undef,
     counter => 0,
   ), $class);
@@ -59,19 +57,18 @@ sub new {
 
 ###############################################################################
 sub handleRedDot {
-  my ($this, $params, $theTopic, $theWeb) = @_;
+  my ($this, $session, $params, $theTopic, $theWeb) = @_;
 
   #writeDebug("called handleRedDot($theWeb, $theTopic), parms=".$params->stringify);
 
-  my $requestAction = $this->getRequestAction();
-  return '' unless $requestAction =~ /^view/;
+  return '' unless Foswiki::Func::getContext()->{view};
 
   my $theWebTopics = $params->{_DEFAULT} || "$theWeb.$theTopic";
   my $theRedirect = $params->{redirect};
   my $theText = $params->{text};
   my $theStyle = $params->{style} || '';
   my $theClass = $params->{class} || '';
-  my $theIcon = $params->{icon} || 'pencil';
+  my $theIcon = $params->{icon} || 'fa-pencil';
   my $theGrant = $params->{grant} || '.*';
   my $theTitle = $params->{title};
   my $theAnimate = Foswiki::Func::isTrue($params->{animate}, 1);
@@ -95,8 +92,8 @@ sub handleRedDot {
     $mode .= ' redDotAnimated';
   }
 
-  my $baseWeb = $this->{session}{webName};
-  my $baseTopic = $this->{session}{topicName};
+  my $baseWeb = $session->{webName};
+  my $baseTopic = $session->{topicName};
 
   my $query = Foswiki::Func::getCgiQuery();
   unless ($theRedirect) {
@@ -114,7 +111,7 @@ sub handleRedDot {
 
       $theRedirect = Foswiki::Func::getScriptUrl($baseWeb, $baseTopic, 'view') . '?' . $queryString;
     }
-    $theRedirect .= "#reddot".$this->{counter};
+    $theRedirect .= "%23reddot".$this->{counter};
   }
 
   # find the first webtopic that we have access to
@@ -157,12 +154,15 @@ sub handleRedDot {
   $params{redirectto} = $theRedirect if $theRedirect ne "$thisWeb.$thisTopic";
 
   # red dotting
-  my $result = "<span class='redDot $mode $theClass' ";
+  my $result = "<span class='redDot $mode $theClass' id='reddot" . ($this->{counter}++) . "' ";
+
+  my $url = Foswiki::Func::getScriptUrl($thisWeb, $thisTopic, 'edit', %params);
+  $url =~ s/%2523reddot/%23reddot/g; # revert double encoding of # anchor
+
   $result .= "data-parent='$theParent' " if defined $theParent;
   $result .= "style='$theStyle' " if $theStyle;
-  $result .= '><a id=\'reddot' . ($this->{counter}++) . '\' ' . 'href=\'' . Foswiki::Func::getScriptUrl($thisWeb, $thisTopic, 'edit', %params);
+  $result .= "><a href='$url' ";
 
-  $result .= '\' ';
   if ($theTitle) {
     $result .= "title='%ENCODE{\"$theTitle\" type=\"entity\"}%'";
   } else {
@@ -173,51 +173,6 @@ sub handleRedDot {
   #writeDebug("done handleRedDot");
 
   return $result;
-}
-
-###############################################################################
-# take the REQUEST_URI, strip off the PATH_INFO from the end, the last word
-# is the action; this is done that complicated as there may be different
-# paths for the same action depending on the apache configuration (rewrites, aliases)
-sub getRequestAction {
-  my $this = shift;
-
-  my $currentAction = $this->{currentAction};
-
-  unless (defined $currentAction) {
-
-    my $request = Foswiki::Func::getCgiQuery();
-
-    if (defined($request->action)) {
-      $currentAction = $request->action();
-    } else {
-      my $context = Foswiki::Func::getContext();
-
-      # not all cgi actions we want to distinguish set their context
-      # so only use those we are sure of
-      return 'edit' if $context->{'edit'};
-      return 'view' if $context->{'view'};
-      return 'save' if $context->{'save'};
-      # TODO: more
-
-      # fall back to analyzing the path info
-      my $pathInfo = $ENV{'PATH_INFO'} || '';
-      $currentAction = $ENV{'REQUEST_URI'} || '';
-      if ($currentAction =~ /^.*?\/([^\/]+)$pathInfo.*$/) {
-        $currentAction = $1;
-      } else {
-        $currentAction = 'view';
-      }
-      #writeDebug("PATH_INFO=$ENV{'PATH_INFO'}");
-      #writeDebug("REQUEST_URI=$ENV{'REQUEST_URI'}");
-      #writeDebug("currentAction=$currentAction");
-
-    }
-
-    $this->{currentAction} = $currentAction;
-  }
-
-  return $currentAction;
 }
 
 1;

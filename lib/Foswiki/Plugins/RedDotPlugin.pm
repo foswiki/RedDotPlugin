@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2015 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2016 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ use Foswiki::Func ();
 use Foswiki::Plugins ();
 use Foswiki::Plugins::JQueryPlugin ();
 
-our $VERSION = '4.00';
-our $RELEASE = '5 Mar 2015';
+our $VERSION = '4.11';
+our $RELEASE = '12 Sep 2015';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Quick-edit links';
 our $core;
@@ -35,10 +35,7 @@ sub initPlugin {
   $core = undef;
   
   Foswiki::Func::registerTagHandler('REDDOT', sub {
-    my $session = shift;
-
-    $core = Foswiki::Plugins::JQueryPlugin::createPlugin('reddot', $session)
-      unless defined $core;
+    $core = Foswiki::Plugins::JQueryPlugin::createPlugin('reddot') unless defined $core;
 
     return $core->handleRedDot(@_) if $core;
     return '';

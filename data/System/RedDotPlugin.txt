@@ -1,5 +1,6 @@
 %META:TOPICINFO{author="ProjectContributor" date="1437155427" format="1.1" version="1"}%
 ---+!! %TOPIC%
+%FORMFIELD{"Description"}%
 
 This plugin renders a clickable red dot (<a style="color:red; font-weight:bold; padding-left:2px; padding-right:2px; line-height:100%; font-size:18px; text-decoration:none" href="%SCRIPTURLPATH{"edit"}%/%WEB%/%TOPIC%?t=%SERVERTIME{"$year$mo$day$min$sec"}%">.</a>) to ease the edit access to
 a page. The red dot will only be visible if the current wikiuser has
@@ -39,21 +40,15 @@ Arguments:
      %USERSWEB%.AdminGroup.
    * %WIKIUSERNAME%%REDDOT{"%WIKIUSERNAME%"}% points to your homepage.
 
----++ Plugin Installation Instructions
+---++ Installation Instructions
 %$INSTALL_INSTRUCTIONS%
 
----++ Plugin Info
-<!-- provided for compatibility only
-   * Set SHORTDESCRIPTION = Renders edit-links as little red dots
--->
+---++ Dependencies
+%$DEPENDENCIES%
 
-
-|  Plugin Author: | Michael Daum |
-|  Copyright &copy;: | 2005-2015, Michael Daum http://michaeldaumconsulting.com |
-|  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Release: | %$RELEASE% |
-|  Version: | %$VERSION% |
-|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+---++ Change History
+|  12 Sep 2016: | fixed missing jquery dependency on <nop>HoverIntent |
+|  13 Oct 2015: | fixed encoding of redirect anchor |
 |  05 Mar 2015: | rewrite as a jQuery plugin |
 |  13 Mar 2013: | modernizing some parts |
 |  11 Nov 2010: | use JQICON instead of own getIconUrl() procedure; \
@@ -84,5 +79,14 @@ Arguments:
 |  23 Sep 2005: | added =text=, =style=, =grant= and =WHITEBOARD= feature |
 |  19 Sep 2005: | added redirect-to-origin feature |
 |  22 Aug 2005: | Initial version |
-|  Plugin Home: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Support/%TOPIC% |
+
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2005-2015, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/%TOPIC%"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%

@@ -1,15 +1,15 @@
 /*
  * jQuery.RedDot plugin
  *
- * Copyright (c) 2010-2015 Michael Daum http://michaeldaumconsulting.com
+ * Copyright (c) 2010-2016 Michael Daum http://michaeldaumconsulting.com
  *
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
  */
-jQuery(function($) {
 "use strict";
+jQuery(function($) {
 
   /***************************************************************************
    * class definition
@@ -18,6 +18,7 @@ jQuery(function($) {
     var self = this;
 
     self.elem = $(elem);
+    self.anchor = self.elem.children("a:first");
     self.opts = $.extend({}, opts, self.elem.data());
     self.init();
   }
@@ -36,13 +37,13 @@ jQuery(function($) {
 
     self.parentElem.hoverIntent({
       over: function() {
-        self.elem.fadeIn(500, function() {
-          self.elem.css({opacity: 1.0});
+        self.anchor.fadeIn(500, function() {
+          self.anchor.css({opacity: 1.0});
         });
       },
       out: function() {
-        self.elem.stop();
-        self.elem.css({display:'none', opacity: 1.0});  
+        self.anchor.stop();
+        self.anchor.css({display:'none', opacity: 1.0});  
       }
     });
   };
