@@ -1,3 +1,4 @@
+!noci
 data/System/RedDotPlugin.txt 0644
 lib/Foswiki/Plugins/RedDotPlugin/Core.pm 0644
 lib/Foswiki/Plugins/RedDotPlugin/DEPENDENCIES 0644

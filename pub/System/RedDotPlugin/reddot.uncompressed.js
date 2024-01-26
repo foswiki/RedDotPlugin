@@ -1,15 +1,13 @@
 /*
  * jQuery.RedDot plugin
  *
- * Copyright (c) 2010-2016 Michael Daum http://michaeldaumconsulting.com
+ * Copyright (c) 2010-2021 Michael Daum http://michaeldaumconsulting.com
  *
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
+ * Licensed under the GPL license http://www.gnu.org/licenses/gpl.html
  *
  */
 "use strict";
-jQuery(function($) {
+(function($) {
 
   /***************************************************************************
    * class definition
@@ -62,7 +60,10 @@ jQuery(function($) {
   /***************************************************************************
    * enable declarative widget instanziation
    */
-  $(".redDotAnimated:not(.redDotInited)").livequery(function() {
-    $(this).addClass("redDotInited").redDot();
+  $(function() {
+    $(".redDotAnimated").livequery(function() {
+      $(this).redDot();
+    });
   });
-});
+
+})(jQuery);

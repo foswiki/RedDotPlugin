@@ -11,8 +11,10 @@
 .redDot a {
   position:absolute;
   text-decoration:none;
-  left:3px;
+  top:0;
+  left:0.5em;
   padding:0px;
+  line-height:1;
 }
 .redDotIconMode a:hover {
   background-color:transparent;

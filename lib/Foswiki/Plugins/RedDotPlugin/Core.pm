@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2016 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2024 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ use warnings;
 
 use Foswiki::Func ();
 use Foswiki::Plugins ();
+use Foswiki::Plugins::RedDotPlugin ();
 use Foswiki::Plugins::JQueryPlugin ();
 use Foswiki::Plugins::JQueryPlugin::Plugin ();
 
@@ -27,39 +28,34 @@ our @ISA = qw( Foswiki::Plugins::JQueryPlugin::Plugin );
 
 use constant TRACE => 0;    # toggle me
 
-###############################################################################
-# static
-sub writeDebug {
-  #Foswiki::Func::writeDebug("- RedDotPlugin - " . $_[0]) if TRACE;
-  print STDERR "- RedDotPlugin - " . $_[0] . "\n" if TRACE;
-}
-
-###############################################################################
 sub new {
   my $class = shift;
 
   my $this = bless($class->SUPER::new( 
     name => 'RedDot',
-    version => '4.00',
+    version => $Foswiki::Plugins::RedDotPlugin::VERSION,
     author => 'Michael Daum',
-    homepage => 'http://foswiki.org/Extensions/RedDotPlugin',
+    homepage => 'https://foswiki.org/Extensions/RedDotPlugin',
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/RedDotPlugin',
     documentation => '%SYSTEMWEB%.RedDotPlugin',
     javascript => ['reddot.js'],
     css => ['reddot.css'],
-    dependencies => ['livequery', 'hoverintent', 'JQUERYPLUGIN::FOSWIKI'], 
+    dependencies => ['hoverintent', 'JQUERYPLUGIN::FOSWIKI'], 
     currentAction => undef,
     counter => 0,
   ), $class);
 
+  $this->{defaultIcon} = Foswiki::Func::getPreferencesValue("REDDOTPLUGIN_EDITIMG") ||  
+    Foswiki::Func::getPreferencesValue("EDITCHAPTERPLUGIN_EDITIMG") ||
+    '%JQICON{"fa-pencil"}%';
+
   return $this;
 }
 
-###############################################################################
 sub handleRedDot {
   my ($this, $session, $params, $theTopic, $theWeb) = @_;
 
-  #writeDebug("called handleRedDot($theWeb, $theTopic), parms=".$params->stringify);
+  #_writeDebug("called handleRedDot($theWeb, $theTopic), parms=".$params->stringify);
 
   return '' unless Foswiki::Func::getContext()->{view};
 
@@ -68,7 +64,7 @@ sub handleRedDot {
   my $theText = $params->{text};
   my $theStyle = $params->{style} || '';
   my $theClass = $params->{class} || '';
-  my $theIcon = $params->{icon} || 'fa-pencil';
+  my $theIcon = $params->{icon} || $this->{defaultIcon};
   my $theGrant = $params->{grant} || '.*';
   my $theTitle = $params->{title};
   my $theAnimate = Foswiki::Func::isTrue($params->{animate}, 1);
@@ -86,7 +82,11 @@ sub handleRedDot {
     }
     $theText = "$theText";
   } else {
-    $theText = '%JQICON{"' . $theIcon . '" format="<img src=\'$iconPath\' width=\'16\' height=\'16\' class=\'$iconClass\' $iconAlt/>"}%';
+    if ($theIcon =~ /^%JQICON/) {
+      $theText = $theIcon;
+    } else {
+      $theText = '%JQICON{"' . $theIcon . '" format="<img src=\'$iconPath\' width=\'16\' height=\'16\' class=\'$iconClass\' $iconAlt/>"}%';
+    }
   }
   if ($theAnimate) {
     $mode .= ' redDotAnimated';
@@ -99,9 +99,9 @@ sub handleRedDot {
   unless ($theRedirect) {
     my $redirectPref = Foswiki::Func::getPreferencesValue("REDDOT_REDIRECT");
     if ($redirectPref) {
-      $redirectPref = Foswiki::Func::expandCommonVariables($redirectPref);
+      $redirectPref = Foswiki::Func::expandCommonVariables($redirectPref) if $redirectPref =~ /%/;
       my ($redirectWeb, $redirectTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $redirectPref);
-      $theRedirect = Foswiki::Func::getScriptUrl($redirectWeb, $redirectTopic, 'view');
+      $theRedirect = Foswiki::Func::getScriptUrlPath($redirectWeb, $redirectTopic, 'view');
     } else {
       my $queryString = $query->query_string;
 
@@ -109,7 +109,7 @@ sub handleRedDot {
       # so we double encode them
       $queryString =~ s/\%22/\%2522/g;
 
-      $theRedirect = Foswiki::Func::getScriptUrl($baseWeb, $baseTopic, 'view') . '?' . $queryString;
+      $theRedirect = Foswiki::Func::getScriptUrlPath($baseWeb, $baseTopic, 'view') . '?' . $queryString;
     }
     $theRedirect .= "%23reddot".$this->{counter};
   }
@@ -121,13 +121,13 @@ sub handleRedDot {
   my $wikiName = Foswiki::Func::getWikiName();
 
   foreach my $webTopic (split(/\s*,\s*/, $theWebTopics)) {
-    #writeDebug("testing webTopic=$webTopic");
+    #_writeDebug("testing webTopic=$webTopic");
 
     ($thisWeb, $thisTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $webTopic);
-    $thisWeb =~ s/\//\./go;
+    $thisWeb =~ s/\//\./g;
 
     if (Foswiki::Func::topicExists($thisWeb, $thisTopic)) {
-      #writeDebug("checking access on $thisWeb.$thisTopic for $wikiName");
+      #_writeDebug("checking access on $thisWeb.$thisTopic for $wikiName");
       $hasEditAccess = Foswiki::Func::checkAccessPermission("CHANGE", $wikiName, undef, $thisTopic, $thisWeb);
       if ($hasEditAccess) {
         $hasEditAccess = 0 unless $wikiName =~ /$theGrant/;
@@ -135,7 +135,7 @@ sub handleRedDot {
         # if we are in theGrant
       }
       if ($hasEditAccess) {
-        #writeDebug("granted");
+        #_writeDebug("granted");
         last;
       }
     }
@@ -145,7 +145,7 @@ sub handleRedDot {
     return '';
   }
 
-  #writeDebug("rendering red dot on $thisWeb.$thisTopic for $wikiName");
+  #_writeDebug("rendering red dot on $thisWeb.$thisTopic for $wikiName");
 
   my %params = ();
   $params{t} = time();
@@ -154,9 +154,9 @@ sub handleRedDot {
   $params{redirectto} = $theRedirect if $theRedirect ne "$thisWeb.$thisTopic";
 
   # red dotting
-  my $result = "<span class='redDot $mode $theClass' id='reddot" . ($this->{counter}++) . "' ";
+  my $result = "<span class='redDot foswikiNormal $mode $theClass' id='reddot" . ($this->{counter}++) . "' ";
 
-  my $url = Foswiki::Func::getScriptUrl($thisWeb, $thisTopic, 'edit', %params);
+  my $url = Foswiki::Func::getScriptUrlPath($thisWeb, $thisTopic, 'edit', %params);
   $url =~ s/%2523reddot/%23reddot/g; # revert double encoding of # anchor
 
   $result .= "data-parent='$theParent' " if defined $theParent;
@@ -170,9 +170,15 @@ sub handleRedDot {
   }
   $result .= ">$theText</a></span>";
 
-  #writeDebug("done handleRedDot");
+  #_writeDebug("done handleRedDot");
 
   return $result;
+}
+
+# static
+sub _writeDebug {
+  #Foswiki::Func::_writeDebug("- RedDotPlugin - " . $_[0]) if TRACE;
+  print STDERR "- RedDotPlugin - " . $_[0] . "\n" if TRACE;
 }
 
 1;

@@ -47,6 +47,7 @@ Arguments:
 %$DEPENDENCIES%
 
 ---++ Change History
+|  26 Jan 2024: | repackaging for newer JQueryPlugin; fixed icon placement |
 |  12 Sep 2016: | fixed missing jquery dependency on <nop>HoverIntent |
 |  13 Oct 2015: | fixed encoding of redirect anchor |
 |  05 Mar 2015: | rewrite as a jQuery plugin |
@@ -82,7 +83,7 @@ Arguments:
 
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Michael Daum"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2005-2015, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2005-2024, Michael Daum"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
