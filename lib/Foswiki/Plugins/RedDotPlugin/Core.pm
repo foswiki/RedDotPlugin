@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2005-2024 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2005-2025 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -101,7 +101,9 @@ sub handleRedDot {
     if ($redirectPref) {
       $redirectPref = Foswiki::Func::expandCommonVariables($redirectPref) if $redirectPref =~ /%/;
       my ($redirectWeb, $redirectTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $redirectPref);
-      $theRedirect = Foswiki::Func::getScriptUrlPath($redirectWeb, $redirectTopic, 'view');
+      $theRedirect = Foswiki::Func::getScriptUrlPath($redirectWeb, $redirectTopic, 'view',
+        '_t' => time()
+      );
     } else {
       my $queryString = $query->query_string;
 
@@ -109,7 +111,8 @@ sub handleRedDot {
       # so we double encode them
       $queryString =~ s/\%22/\%2522/g;
 
-      $theRedirect = Foswiki::Func::getScriptUrlPath($baseWeb, $baseTopic, 'view') . '?' . $queryString;
+      $queryString = ($queryString eq "" ? "?" : "&") . "_t=".time();
+      $theRedirect = Foswiki::Func::getScriptUrlPath($baseWeb, $baseTopic, 'view') . $queryString;
     }
     $theRedirect .= "%23reddot".$this->{counter};
   }
